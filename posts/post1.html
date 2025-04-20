@@ -6,6 +6,7 @@
   <title>Starting My Blog</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
@@ -39,6 +40,22 @@
     a {
         display: block;
         text-align: right;
+    }
+
+    .custom-prev-icon,
+    .custom-next-icon {
+    font-size: 1.5rem;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    }
+
+    .custom-prev-icon:hover,
+    .custom-next-icon:hover {
+    background-color: rgba(0, 0, 0, 0.8);
     }
 
   </style>
@@ -125,12 +142,37 @@
 
 
         <p>This next image shows how I’m using Bootstrap to build the layout:</p>
-        <div class="img placeholder">[Image Placeholder]</div>
+        <div class="container">
+        <div id="myCarousel" class="carousel slide">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+              <div id="0" name="n" class="carousel-item active">
+                <img class="img-fluid d-block mx-auto" src="../images/blog_initia_layout_1_body_mainContainer.png" class="d-block w-100" alt="...">
+              </div>
+              <div id="1" name="a" class="carousel-item">
+                <img class="img-fluid d-block mx-auto" src="../images/blog_initia_layout_2_img_nav_row.png" class="d-block w-100" alt="...">
+              </div>
+              <div id="2" name="x" class="carousel-item">
+                <img class="img-fluid d-block mx-auto" src="../images/blog_initia_layout_3_col_8_4.png" class="d-block w-100" alt="...">
+              </div>
+            </div>
+            <button class="carousel-control-prev" disabled type="button" onclick="carousel_limits('myCarousel', 'left',3)" data-bs-target="#myCarousel" data-bs-slide="prev">
+                <span class="custom-prev-icon"><i class="fa fa-arrow-left"></i></span>
+            </button>
+            <button class="carousel-control-next" type="button" onclick="carousel_limits('myCarousel', 'right', 3)" data-bs-target="#myCarousel" data-bs-slide="next">
+                <span class="custom-next-icon"><i class="fa fa-arrow-right"></i></span>
+            </button>
+        </div>
+        </div>
 
         <p>Here’s what my blog looks like right now:</p>
-        <div class="img placeholder">[Image Placeholder]</div>
+        <img class="mx-auto d-block my-2 img-fluid" src="../images/blog_first_print.png" alt="">
 
-        <p>If it doesn’t look like that when you’re reading this, that means I’m making progress!<br>
+        <p>If it doesn’t look like that when you’re reading this, that means I’m making progress!
         I’ll be using Git and GitHub to version-control everything, so the blog’s past won’t be lost.</p>
     </div>
 
@@ -162,5 +204,34 @@
         </blockquote>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function carousel_limits(carousel_id, direction, number_of_elements){
+        const carousel = document.getElementById(carousel_id);
+        const active_element = carousel.querySelector('.carousel-item.active');
+
+        const control_prev = carousel.querySelector(".carousel-control-prev");
+        const control_next = carousel.querySelector(".carousel-control-next");
+
+        const last_element_index = number_of_elements -1;
+
+
+        if(direction === 'left' && active_element.id === "1"){
+            control_prev.disabled = true;
+            
+        }else if(control_prev.disabled){
+            control_prev.disabled = false;
+        }
+        
+        if(direction === 'right' && active_element.id === String(last_element_index - 1)){
+            control_next.disabled = true;
+
+        }else if(control_next.disabled){
+            control_next.disabled = false;
+        }
+
+
+    } 
+  </script>
 </body>
 </html>
