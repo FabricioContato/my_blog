@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building a Comment Section with Free Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="css_js/style.css">
+</head>
+<body style="background-color: hsl(35, 30%, 96%)">
+  <div class="container" style="background-color: white">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #888888;">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <i class="bi bi-house-door-fill"></i>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ">
+            <li class="nav-item">
+              <a class="nav-link text-white font-weight-bold" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white font-weight-bold" href="#">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="card card-body mb-3 mt-3">
+      <h1>Building a Comment Section with Free Tools</h1>
+      <p>I guess there are some ready-made solutions for a comment section, but that is not the spirit of this blog. I want to build a solution myself.</p>
+      <p>My first thought about how to implement it was with a database and an API hosted on some cloud service, but I was afraid of spending money on it. This blog is not making money, and I don’t have enough traffic right now to justify spending on it. That being said, my goal became to implement it using free resources.</p>
+      <p>I ended up choosing Google Spreadsheets, Google Apps Script, and EmailJS:</p>
+      <ul>
+        <li><strong>Google Spreadsheets</strong> is the Google equivalent of Excel that I am using as a database.</li>
+        <li><strong>Google Apps Script</strong> is a scripting platform that you can use as an API.</li>
+        <li><strong>EmailJS</strong> is a service that allows you to send emails to yourself from your JavaScript code.</li>
+      </ul>
+      <p>You’re probably thinking, "Why do you need EmailJS?" An email tool definitely isn’t part of your typical web dev stack, and I didn’t want to add it to mine either.</p>
+      <p>The thing is, when you work with free tools, you might face some awkward limitations that you can solve with some awkward use of another free tool. I’ll explain.</p>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>Google Spreadsheets and Google Apps Script</h2>
+      <p>Google Spreadsheets is basically the Google equivalent of Excel — a spreadsheet application for your daily or business needs. For each Google Spreadsheet, you can have a Google Apps Script written in JavaScript for automation. Both tools have free-tier options.</p>
+      <p>The main point here is that the Google Apps Script can be deployed as a web app, able to serve files and data, and has easy connection with Google Spreadsheets. For this project, I only care about the data, so the Apps Script functions as an API for me.</p>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>Choosing Google Apps Script</h2>
+      <p>There are some free-tier services that allow the implementation of APIs and databases out there, so why Google Apps Script?</p>
+      <p>Well, I admit that I didn’t research enough at first and ended up with something I knew for sure was free and simple. Now that I have already spent a good amount of time making it work, I’m going to ship it as it is for now.</p>
+      <p>Still, I think it has some advantages. I am dealing with Google, a well-known provider that I can trust, and Google Spreadsheets is such a simple "database" to edit that I could set up a web project for someone with little tech experience, and they would still be able to manage their data. Provided that they have ever had a Google email account, they will probably feel familiar with the tool. Therefore, learning about these tools can be good for some freelancing clients.</p>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>Using doGet(e) and doPost(e)</h2>
+      <p>Google Apps Script uses doGet and doPost as endpoints for the HTTP methods GET and POST. It’s not as flexible as web frameworks available for Node.js, which let you create as many endpoints as you want, but it’s sufficient for my needs right now.</p>
+      <p>However, there’s a problem: Apps Script was made mainly for the Google ecosystem, and there are some limitations when dealing with other domains.</p>
+      <p>For instance, I could not make my website access the doPost endpoint — the CORS (Cross-Origin Resource Sharing) settings on my browser were not allowing communication with doPost. To solve this problem, I would need to set the response header of doPost, but Google does not allow that for security reasons.</p>
+      <p>My solution was to use an email service as my POST request… embarrassing, I know.</p>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>EmailJS</h2>
+      <p>EmailJS is a service that allows you to send emails from your front-end JavaScript code to your email inbox. Browsers don’t allow you to send emails directly from front-end JavaScript for security reasons, so EmailJS acts as a middleman. Your HTML form sends a message to the EmailJS servers, which then forward the message as an email to your inbox.</p>
+      <p>Once the email has arrived, its message can be brought into the spreadsheet by automation written in the Google Apps Script code.</p>
+      <p>But now we face another problem: Apps Script does not trigger actions based on email arrival. I could set a timer so a script would check my inbox periodically, but that solution seems very unoptimized — a short time interval would cause Apps Script to work in vain many times. A long time interval would cause users to see no immediate result after submitting a comment, making them think the comment section was broken.</p>
+      <p>My solution for this was to check the inbox every time a GET request is made. In the getPost function, the code first checks the inbox for new emails with the subject "blog_comment", brings their content into the spreadsheet, copies the table, turns it into a JSON file, and then sends it back as a response.</p>
+      <p>This approach makes fetching slower, but it’s good enough for now.</p>
+    </div>
+
+    <div class="card card-body mb-3">
+        <h2>My App Script code for now</h2>
+        <div class="container">
+            <pre><code class="language-javascript">
+function doGet(e) {
+  // check for new comments mails to add to the spreadSheet
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const threads = GmailApp.search('subject:blog_comment is:unread');
+
+  threads.forEach(thread => {
+    const messages = thread.getMessages();
+    messages.forEach(msg => {
+    const name = msg.getFrom().split(' <')[0];
+    // I use ##end## to separete some parts of the email body
+    // You dont need to write it on your comment. It is placed there by default 
+    const [postId, message] = msg.getPlainBody().split("###end###");
+
+    sheet.appendRow([postId, name, message]);
+    });
+    thread.markRead(); 
+  });
+
+  //returing the data as a json
+  const data = sheet.getDataRange().getValues();
+  const postId = e.parameter['post_id'];
+  const filtered_data = data.filter(row => String(row[0]) === String(postId));
+
+
+  var jsonData = [];
+  for (var i = 0; i < filtered_data.length; i++) {
+    jsonData.push({
+    PostId: filtered_data[i][0],
+    Name: filtered_data[i][1],
+    Message: filtered_data[i][2]
+    });
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(jsonData))
+    .setMimeType(ContentService.MimeType.JSON);
+
+}
+
+            </code></pre>
+        </div>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>Neocities Content Security Policy (CSP)</h2>
+      <p>Now, with my backend set, it was time to make some request tests. They failed... Apparently, Neocities — my website host at that time — had CSP settings that forbade fetching resources from other domains. I was only allowed to fetch from the Neocities domain.</p>
+      <p>Since Neocities does not allow access to or editing of the CSP, I found myself forced to pursue another host. Now I am using Cloudflare. Here, I can set my own CSP, and it’s also a free hosting option. It’s not a community like Neocities, but I wasn’t relying on that anyway.</p>
+      <p>On Cloudflare, I can connect my host to my blog’s GitHub repository, so when I update my master branch, I automatically deploy the new version of my blog to production. Nice! Maybe one day I’ll have a more complex pipeline to write about.</p>
+      <p>Now, my request tests are successful.</p>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>Dynamic Front-end</h2>
+      <p>Maybe this subject brings to mind frameworks like ReactJS, but that’s not my task ticket today. My goal was simply to receive a JSON from the backend with the comments data, and for each comment, display a Bootstrap card showing the user's name and message. I implemented that with pure JavaScript, HTML, and Bootstrap (CSS).</p>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>My FrontEnd JS code for fetching and displaying comments</h2>
+      <div class="container">
+          <pre><code class="language-javascript">
+async function fetchData() {
+  // Fetching comments data
+  const parameters = `?post_id=${document.getElementById("post_id").value}`;
+  const response = await fetch(`https://script.google.com/macros/s/AKfycbzN3qxsiTKoi2sVrRE6QzhTWWp4qYEGzsBpiDtz7U0cfjbkEpP-w16S_r3rL_Fbzl3Q/exec${parameters}`);
+  const data = await response.json();
+
+  // Hiding the messaga 'Loading comments...'
+  document.getElementById("loading_comments").classList.add("d-none");
+
+  const comment_section = document.getElementById('comments');
+  
+  // Creaing cards for each comment data
+  data.reverse().forEach(row => {
+      comment_section.appendChild(createCard(row.Name, row.Message));
+  });
+}
+
+// Running function on page loading
+window.onload = fetchData;
+          </code></pre>
+          <h3>Auxilar function that builds comment cards</h3>
+          <pre><code class="language-javascript">
+function createCard(name, message){
+  const div = document.createElement("div");
+  const div_flex = document.createElement("div");
+  const h3 = document.createElement('h3');
+  const p = document.createElement('p');
+  const icon = document.createElement('i');
+
+  div.classList.add("card","card-body","my-1");
+  div_flex.classList.add("d-flex");
+  icon.classList.add("bi","bi-person-circle", "d-inline");
+  h3.textContent = `${name}`;
+  h3.classList.add("d-inline","mx-2");
+  p.textContent = `${message}`;
+
+
+  div_flex.appendChild(icon);
+  div_flex.appendChild(h3);
+  div.appendChild(div_flex);
+  div.appendChild(p);
+
+  return div;
+}
+
+
+          </code></pre>
+      </div>
+    </div>
+
+    <div class="card card-body mb-3">
+      <h2>Security</h2>
+      <p>Now my blog system has an entry point for malicious intent, and I can't just ignore it.</p>
+      <p>There are important measures I need to implement, such as:</p>
+      <ul>
+        <li>Validation</li>
+        <li>Sanitation</li>
+        <li>Moderation</li>
+      </ul>
+      <p>There may be more, but that’s a topic for another post.</p>
+    </div>
+
+    <form class="card card-body mb-3" id="comment-form">
+      <h6 class="mb-3 text-muted">Leave a comment</h6>
+      <div class="mb-2">
+        <input type="text" name="name" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
+          id="name" placeholder="Name" required>
+      </div>
+      <div class="mb-2">
+        <textarea name="message" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
+          id="comment" rows="3" placeholder="Your comment..." required></textarea>
+      </div>
+      <input type="hidden" name="post_id" id="post_id" value="2">
+      <div class="text-end">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Post</button>
+      </div>
+    </form>
+    <span id="loading_comments">Loading comments...</span>
+    <span id="sending_comment" class="d-none">Sending your comment...</span>
+    <span id="erro" class="d-none">Something went wrong, try again later.</span>
+    <div id="comments"></div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+  <script type="text/javascript" src="css_js/script.js"></script>
+</body>
+</html>
