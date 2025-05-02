@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap');
+
+nav a {
+    font-family: "JetBrains Mono";
+}
+
 .card-text p {
 margin-bottom: 0em;
 }
