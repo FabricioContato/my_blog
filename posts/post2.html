@@ -219,9 +219,11 @@ function createCard(name, message){
         <button type="submit" class="btn btn-sm btn-outline-secondary">Post</button>
       </div>
     </form>
-    <span id="loading_comments">Loading comments...</span>
+    <span id="loading_comments" class="d-block">Loading comments...</span>
     <span id="sending_comment" class="d-none">Sending your comment...</span>
-    <span id="erro" class="d-none">Something went wrong, try again later.</span>
+    <span id="fetching_erro" class="d-none">&#128533; Something went wrong while fetching comments.</span>
+    <span id="sending_erro" class="d-none">&#128533; Something went wrong while sending your comment, try again later.</span>
+    <span id="invalidComment" class="d-none">&#128679; Your comment or name has fobiden characters ( < > " ' / \ = ( ) { } [ ] ; : @ & + % # $ ` )</span>
     <div id="comments"></div>
 
   </div>

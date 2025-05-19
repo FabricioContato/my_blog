@@ -23,10 +23,19 @@ function createCard(name, message){
 
 async function fetchData() {
     const parameters = `?post_id=${document.getElementById("post_id").value}`;
-    const response = await fetch(`https://script.google.com/macros/s/AKfycbzN3qxsiTKoi2sVrRE6QzhTWWp4qYEGzsBpiDtz7U0cfjbkEpP-w16S_r3rL_Fbzl3Q/exec${parameters}`);
-    const data = await response.json();
+    var response;
+    var data;
+    try{
+        response = await fetch(`https://script.google.com/macros/s/AKfycbzN3qxsiTKoi2sVrRE6QzhTWWp4qYEGzsBpiDtz7U0cfjbkEpP-w16S_r3rL_Fbzl3Q/exec${parameters}`);
+        data = await response.json();
+    }catch(error){
+        document.getElementById("loading_comments").classList.replace("d-block", "d-none");
+        document.getElementById("fetching_erro").classList.replace("d-none", "d-block");
+        return;
+    }
 
-    document.getElementById("loading_comments").classList.add("d-none");
+
+    document.getElementById("loading_comments").classList.replace("d-block", "d-none");
 
     // Populate the table with fetched data
     const comment_section = document.getElementById('comments');
@@ -38,6 +47,11 @@ async function fetchData() {
 
 window.onload = fetchData;
 
+function isCommentValid(name, comment) {
+    const forbidden = /[<>"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;
+    return !forbidden.test(name) && !forbidden.test(comment);
+  }
+
 (function() {
 emailjs.init("NiOdTDAazubFOOdcU");
 })();
@@ -45,21 +59,38 @@ emailjs.init("NiOdTDAazubFOOdcU");
 document.getElementById('comment-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
+    const invalidCommentMessage = document.getElementById("invalidComment");
+    if (!invalidCommentMessage.classList.contains("d-none")){
+        invalidCommentMessage.classList.replace("d-block", "d-none");
+    }
+
+    const erroMessage = document.getElementById("sending_erro");
+    if (!erroMessage.classList.contains("d-none")){
+        erroMessage.classList.replace("d-block", "d-none");
+    }
+
     const sending = document.getElementById("sending_comment");
-    sending.classList.remove("d-none");
+    sending.classList.replace("d-none", "d-block");
+
+    const formData = new FormData(this);
+    const name = formData.get('name');
+    const message = formData.get('message');
+
+    if (!isCommentValid(name, message)){
+        sending.classList.replace("d-block", "d-none");
+        invalidCommentMessage.classList.replace("d-none", "d-block");
+        return;
+    }
 
     emailjs.sendForm('service_eun3jwf', 'template_3n960am', this)
         .then(() => {
-        sending.classList.add("d-none");
-        const formData = new FormData(this);
-        const name = formData.get('name');
-        const message = formData.get('message');
+        sending.classList.replace("d-block", "d-none");
         document.getElementById('comments').prepend(createCard(name, message));
         this.reset();
         }, (error) => {
-        sending.classList.add("d-none");
+        sending.classList.replace("d-block", "d-none");
+        erroMessage.classList.replace("d-none", "d-block");
         console.error('❌ FAILED...', error);
-        alert('❌ Something went wrong. Please try again.');
         });
 });
 

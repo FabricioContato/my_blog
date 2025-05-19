@@ -94,7 +94,7 @@
       <h6 class="mb-3 text-muted">Leave a comment</h6>
       <div class="mb-2">
         <input type="text" name="name" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
-          id="name" placeholder="Name" required>
+          id="name" placeholder="Name" value="12" required>
       </div>
       <div class="mb-2">
         <textarea name="message" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
@@ -105,9 +105,11 @@
         <button type="submit" class="btn btn-sm btn-outline-secondary">Post</button>
       </div>
     </form>
-    <span id="loading_comments">Loading comments...</span>
+    <span id="loading_comments" class="d-block">Loading comments...</span>
     <span id="sending_comment" class="d-none">Sending your comment...</span>
-    <span id="erro" class="d-none">Something went wrong, try again later.</span>
+    <span id="fetching_erro" class="d-none">&#128533; Something went wrong while fetching comments.</span>
+    <span id="sending_erro" class="d-none">&#128533; Something went wrong while sending your comment, try again later.</span>
+    <span id="invalidComment" class="d-none">&#128679; Your comment or name has fobiden characters ( < > " ' / \ = ( ) { } [ ] ; : @ & + % # $ ` )</span>
     <div id="comments"></div>
 
   </div>
