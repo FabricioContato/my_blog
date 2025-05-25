@@ -87,6 +87,7 @@
     </div>
 
     <div class="card card-body mb-3 mt-3">
+      <p>In hindsight, maybe blocking characters was overkill. Well, better safe than sorry... but I guess I'll remove this blocking in a future commit.</p>
       <h2>User Input Sanitization</h2>
       <p>Your system users may not always write to you with the best intentions. Not only can they send you a mean message, but they might also include a malicious piece of code.</p>
       <p>Imagine if someone writes a comment on my blog that includes an HTML tag containing JavaScript code. This comment will be displayed as part of my blog page. A browser could potentially interpret that comment as additional front-end code to be executed—and that’s where the danger lies.</p>
@@ -121,6 +122,26 @@ commentSection.appendChild(commentElement);
       </code></pre>
 
       <p>You can write them in the name and text area of the form, but when you click "Post," a message will appear saying that your comment or name contains forbidden characters. The frontend will then refuse to send your message to the “database.” Without these characters, it becomes much harder to inject code into the comment section.</p>
+      <pre class="language-javascript"><code>
+// Functio to validade a comment
+function isCommentValid(name, comment) {
+    const forbidden = /[<>"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;
+    return !forbidden.test(name) && !forbidden.test(comment);
+}
+      </code></pre>
+
+      <pre class="language-javascript"><code>
+// Part of my form's send event handler.
+// When a comment is invalid,
+// it hides the "sending" message
+// and shows the "invalid comment" message
+// by changing CSS classes.
+if (!isCommentValid(name, message)){
+        sending.classList.replace("d-block", "d-none");
+        invalidCommentMessage.classList.replace("d-none", "d-block");
+        return;
+}
+      </code></pre>
 
       <p>Some of these characters are blocked not just for script injection, but also to protect the database itself. I’m using a Google Spreadsheet as a database—it’s public information, and anyone following my blog posts knows about it. To prevent a clever user from submitting a comment that contains a Google Sheets formula (which could tamper with the database), I’m filtering out those characters on the frontend.</p>
 
@@ -152,9 +173,7 @@ function doGet(e) {
   //returing the data as a json
   const data = sheet.getDataRange().getValues();
   const postId = e.parameter['post_id'];
-  //const postId = "2";
   const filtered_data = data.filter(row => String(row[0]) === String(postId));
-  //console.log(filtered_data);
 
   var jsonData = [];
   for (var i = 0; i < filtered_data.length; i++) {
@@ -164,7 +183,7 @@ function doGet(e) {
       Message: filtered_data[i][2]
     });
   }
-  //console.log(jsonData);
+
   return ContentService.createTextOutput(JSON.stringify(jsonData))
     .setMimeType(ContentService.MimeType.JSON);
   
@@ -185,7 +204,7 @@ function doGet(e) {
         <textarea name="message" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
           id="comment" rows="3" placeholder="Your comment..." required></textarea>
       </div>
-      <input type="hidden" name="post_id" id="post_id" value="2">
+      <input type="hidden" name="post_id" id="post_id" value="3">
       <div class="text-end">
         <button type="submit" class="btn btn-sm btn-outline-secondary">Post</button>
       </div>
