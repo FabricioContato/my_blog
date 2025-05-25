@@ -33,7 +33,7 @@
     </nav>
 
     <div class="card card-body mb-3 mt-3">
-      <h1>My first cybersecurity concernss</h1>
+      <h1>My first steps in cybersecurity</h1>
       <p>Cybersecurity. It might not be flashy, but if some noob hackers manage to break in, where does that leave my credibility?</p>
       
       <p>My first concerns ended up been:</p>
@@ -136,6 +136,8 @@ function isCommentValid(name, comment) {
 // it hides the "sending" message
 // and shows the "invalid comment" message
 // by changing CSS classes.
+// The return exits the form sending function
+// before it actually sends the message.
 if (!isCommentValid(name, message)){
         sending.classList.replace("d-block", "d-none");
         invalidCommentMessage.classList.replace("d-none", "d-block");
