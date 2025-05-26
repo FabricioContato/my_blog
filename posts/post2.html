@@ -72,7 +72,7 @@
       <p>EmailJS is a service that allows you to send emails from your front-end JavaScript code to your email inbox. Browsers don’t allow you to send emails directly from front-end JavaScript for security reasons, so EmailJS acts as a middleman. Your HTML form sends a message to the EmailJS servers, which then forward the message as an email to your inbox.</p>
       <p>Once the email has arrived, its message can be brought into the spreadsheet by automation written in the Google Apps Script code.</p>
       <p>But now we face another problem: Apps Script does not trigger actions based on email arrival. I could set a timer so a script would check my inbox periodically, but that solution seems very unoptimized — a short time interval would cause Apps Script to work in vain many times. A long time interval would cause users to see no immediate result after submitting a comment, making them think the comment section was broken.</p>
-      <p>My solution for this was to check the inbox every time a GET request is made. In the getPost function, the code first checks the inbox for new emails with the subject "blog_comment", brings their content into the spreadsheet, copies the table, turns it into a JSON file, and then sends it back as a response.</p>
+      <p>My solution for this was to check the inbox every time a GET request is made. In the doGet function, the code first checks the inbox for new emails with the subject "blog_comment", brings their content into the spreadsheet, copies the table, turns it into a JSON file, and then sends it back as a response.</p>
       <p>This approach makes fetching slower, but it’s good enough for now.</p>
     </div>
 
