@@ -94,29 +94,35 @@ document.getElementById('comment-form').addEventListener('submit', function(e) {
         });
 });
 
+sessionStorage.setItem('current_carousel_img_index', 0 );
 function carousel_limits(carousel_id, direction, number_of_elements){
+    //console.log(current_carousel_img_index);
     const carousel = document.getElementById(carousel_id);
-    const active_element = carousel.querySelector('.carousel-item.active');
+    //const active_element = carousel.querySelector('.carousel-item.active');
 
     const control_prev = carousel.querySelector(".carousel-control-prev");
     const control_next = carousel.querySelector(".carousel-control-next");
 
     const last_element_index = number_of_elements -1;
 
+    let current_carousel_img_index = sessionStorage.getItem('current_carousel_img_index');
 
-    if(direction === 'left' && active_element.id === "1"){
+    if(direction === 'left' && current_carousel_img_index === '1'){
         control_prev.disabled = true;
         
     }else if(control_prev.disabled){
         control_prev.disabled = false;
     }
     
-    if(direction === 'right' && active_element.id === String(last_element_index - 1)){
+    if(direction === 'right' && current_carousel_img_index === String(last_element_index - 1)){
         control_next.disabled = true;
 
     }else if(control_next.disabled){
         control_next.disabled = false;
     }
+
+    current_carousel_img_index = direction === "left" ?  Number(current_carousel_img_index) - 1 : Number(current_carousel_img_index) + 1;
+    sessionStorage.setItem('current_carousel_img_index', current_carousel_img_index);
 
 
 } 

