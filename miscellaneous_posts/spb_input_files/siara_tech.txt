@@ -1,0 +1,50 @@
+post_siara_tech.html
+
+#top-card-title SIARÁ TECH SUMMIT
+
+ #img-src ../images/cracha_siara_tech_summit.jpg
+ #thumb-center-w25 
+
+ #p A new perspective on networking and self-marketing for me.
+
+#card-title Not into social media
+
+ #p Making myself marketable was always about my resume and posting online. The latter has been way less engaging and maintainable.
+
+ #p Social media like Instagram, Facebook, and Reddit don't cross my mind very often, and that is no different with LinkedIn. I don't feel like scrolling or posting myself. I was always like that.
+
+ #p Aside from YouTube, the only social platform I frequently use is WhatsApp. I feel way more willing to interact with people directly.
+
+#card-title Networking idea
+
+ #p Thanks to my job, I have been participating in professional events. Siará Tech Summit is the third event. There, I got to present the company to the public with my boss.
+
+ #p While talking with visitors at my stand or being a visitor myself at other stands, I got to do a good amount of networking. People were nice and interesting. Although I am mostly an introvert and interacting with the public is not my natural inclination, I was enjoying it to some degree.
+
+ #p That good experience made me wonder about participating in more events in the future and having a company myself, primarily in order to do more meaningful networking with relevant connections. I would not just be an I.T. professional searching for opportunities, but I would also have a brand and clients behind me.
+
+#card-p I am still not thrilled to engage on LinkedIn a lot, but let's see if my future plans are going to implement my current ideas.
+
+#card-title Some people I met
+
+ #h3 - SHERLOCK.AI
+
+ #img-src ../images/sherlok.jpg
+ #thumb-center-w50
+
+ #p At first, their solution looked like just a platform that integrates your data sources with an AI, but the value they propose is actually their own improved intelligent system based on AI, dedicated to business advice.
+
+ #p I don't know the details, but from what they told me, their system is made of many AI models running, graphs, search algorithms, and some AI output validation rules.
+
+ #p If I understand correctly, they use a layer of graphs and traditional search algorithms over a base made of multiple running AIs to output a better final result.
+
+ #p When I called their product "The automation of consulting," they said, "Now you understand."
+
+ #h3 - AMONTADA VALLEY
+
+ #img-src ../images/amontada.jpg
+ #thumb-center-w50
+
+ #p They are an educational project that offers courses for free. It is not in my city, but it is not so far away. I have to take a look at their tech courses some day.
+
+ #p I got to know about it after speaking with some young people I actively called from the crowd to hear my presentation.
