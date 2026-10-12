@@ -40,16 +40,32 @@ div.col-1{
 
 .custom-prev-icon,
 .custom-next-icon {
-font-size: 1.5rem;
-color: white;
-background-color: rgba(0, 0, 0, 0.5);
-padding: 8px 12px;
-border-radius: 8px;
-font-weight: bold;
-transition: background-color 0.3s ease;
+    font-size: 1.5rem;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 .custom-prev-icon:hover,
 .custom-next-icon:hover {
-background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.natas-gray-bg-div{
+    background: #ccc;
+}
+
+.natas-text-div{
+    width: 500px;
+    padding: 50px;
+    margin: 10% auto;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+}
+
+.natas-link-div{
+    text-align: right;
 }
