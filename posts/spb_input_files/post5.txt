@@ -1,0 +1,64 @@
+post5.html
+#top-card-title Cyber Security: Learning with Capture the flag NATAS challenges
+ #p Up until now, my data sercurity curse is too theoretical.
+ #p Learning by doing is much more engaging.
+ #p
+  #link-href https://OverTheWire.org
+  #link-text OverTheWire
+  #_ has a bunch of challenges for us to learn from. I have been working with the one related to Web (NATAS).
+
+#card-title Motivation
+ #p I don't plan to go over each one of them. Many challengs are what they are and I don't feel compelled to talk about them.
+ #p On the other hand, I think some are interesting.
+ #p Some made me find solutions that ended up different from a online guide.
+ #p Some made me think about the implications of what a learned.
+
+#card-title Context
+ #p If you don't know, OverTheWire War Games has many security challenges of many types. I am working with the NATAS category which is about web security. On each level you have to find a hiden password to the next level. that is it.
+ #p You may find some password list online to access levels, but they may not work. the admins change them from time to time.
+ #p I maneged to solve 14 levels.
+ #p I have been trying to solve each level without looking at any guide, and I did it, with 1 or 2 exeptions.
+ #p I really want to solve them without peeking, otherwise I think the activity would mostly loose the point.
+
+#card-title SPOILER WARNING !!!
+ #p Maybe you should give it a try before reading this post.
+
+#card-p The levels I will be taking are:
+ #ul
+  #li NATAS4
+  #li NATAS8
+  #li NATAS9
+  #li NATAS10
+  #li NATAS11
+  #li NATAS12
+  #li NATAS13
+
+#card-title NATAS4
+ #p The level starts with:
+ #natas-rectangle-representation Access disallowed. You are visiting from "" while authorized users should come only from "http://natas5.natas.labs.overthewire.org/" 
+   #br
+   #natas-link-div
+    #link-href #
+    #link-text Refresh page
+
+ #p If you click on the link, the page will update and show:
+ #natas-rectangle-representation Access disallowed. You are visiting from "http://natas4.natas.labs.overthewire.org/" while authorized users should come only from "http://natas5.natas.labs.overthewire.org/"
+   #br
+   #natas-link-div
+    #link-href #
+    #link-text Refresh page
+
+ #p Apparently the page is tracking from where we came before reaching natas4.natas.labs.overthewire.org .
+ #p before showing how I solved it, I will talk about a more tech savy way solve it.
+ 
+ #h3 HTTP Header Referer
+ #p While you browse the internet using a browser you are making lots of HTTP requests. That is the protocol web applications uses to share resources like webpages, pictures, scrips, etc...
+ #p You can think of a request like a phisical letter... maybe you are very young and are not very familiarized with that, so lets use the idea of a package instead; You gus order stuff on amazon all the time right !?
+ #p Let's say you recive a package. You know that the most important part is the produc inside, but you know that on the package itself you can find more information.
+ #ul
+  #li Recipient address: USA Ny ...
+  #li Sender adress: China ....
+  #li Tracking Number: 1231234...
+  #li Package weight : 20 kg
+  #li Package physical dimensions: 0.8 cm 0.8 cm 0.5 cm
+

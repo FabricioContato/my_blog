@@ -1,0 +1,86 @@
+Well, all started when I was got this spare router from a friend.
+
+# Taking a look
+
+I started by taking a look at the configurations on the http web interface.
+I started to search for some terms I found there. I learned by the router It self and even fould that the device still have its manuel online toghether with its most updated firmware althoug it's suport was droped long ago. That is not a issue. I also search for terms on the manual, manli on the specifications of the device.
+
+The device in question is the WRN 342 from a Brazilian brand called INTELBRAS. I am from Brazil by the way.
+
+The manuel led me to search for things like the suported WI-FI security protocols like WEP, WPA, WPA2 and WPA3. I also noticed that the power adapter's configuration should be 9DV / 0.6A but my adapter is 9DV / 2A. So the adapter my frind gave me is not the router's original, but after a quick search I fould out it is fine for the current (A) of an adaptor to be equal or grather than the a device's current specification as long the Voltage mathcs. The more you konw. 
+
+# Testing my router communication
+
+## Wireshark
+
+My next step wast to just explore how my spare router works, but before that I thought that knowing how to captre the packet trafic with Wireshark would be a good Idea.
+https://www.youtube.com/playlist?list=PLW8bTPfXNGdC5Co0VnBK1yVzAwSSphzpJ
+
+With the basics of Wireshark under my belt I started taking a look at what happens when my windows 11 connects with my spare router with no internet access.
+
+## Microsoft domains
+
+the first thing that came to my attention was the dns packets attempts.
+"I am not trying any dommain resolution myself" I thought.
+
+the domains the system was trting to resolve were: dns.msftncsi.com, www.msftconnecttest.com, ecs.office.com and activity.windows.com.
+
+These domains are acctully realted to the windows system. the activity.windows.com sends my app usage data to microsoft. So thats how they get my data, or at least one of the ways they do it. I wonder if the system would comoplain if I block that domain from been resolved. That is a question for latter.
+
+## DHCP
+
+The DHCP of my router should work fine without internet, and I think it is but I see some strange behavior I still need to compare with a newer router.
+
+At first I saw 4 DHCP packets. A nice suprise to know that the protocol flow is mainly made of the exchange of 4 messages of different types: Discover, Offer, Request, ACK (Acknowledge)
+
+About DHCP I watched the videos:
+https://www.youtube.com/watch?v=e6-TaH5bkjo
+https://www.youtube.com/watch?v=Cy0M54GSpBg
+
+## ARP
+
+https://www.youtube.com/watch?v=OZi3tVrpI6U
+
+I tryied to understand a video about ARP Poisoning, but maybe It is a little out of my reach for now.
+https://www.youtube.com/watch?v=cVTUeEoJgEg
+
+## ICMP
+
+https://www.youtube.com/watch?v=zAEyHvhCYG4
+Nice to see that there is a kide of packet and protocol for erro messaging that will be sent to you in case something happens.
+
+Maybe I need a project
+
+# Pre-project learning resources
+
+I felt lost after a while testing my router.
+I guess when I self-studing I run on interest, and when it runs out it is over. Either that or I find another point of view.
+In a normal course you have to go through a curriculum. That may not be the most compeling thing to do but at least it keeps you on a track and you don't need to figure out how to build the track yourself on the fly, which is what I am felling right now. 
+
+Maybe a project could help me. I have no idea of what a network project looks like.
+
+after a while I fould a interesting sujestion on reddit.
+"A simple Client-Client messaging app is good as a first project, then, try to make (or even better: modify) a simple game to use networking, by simple I mean like from a text-based RPG at the least, and Mario at most."
+
+Ok, that lit something on me.
+
+Whit that comment as context and some more specifications of what I what, GPT gave a interesting resource link.
+https://beej.us/guide/bgnet0/html/?utm_source=chatgpt.com
+
+The Idea is that this link will give me a better Idea of how I could conduct the Network projects I want to do. The content is not directaly related to what I want, like some tutorial or directed class, but that is good because it leaves much more thinking for me. I want the pieces so I can solve the puzzle myself.
+
+beej.us is not just a short blog post. Holpfully I will not lost time reading this.
+The content goes through the basics that I should know by now, but maybe good to refresh it.
+
+## Sockets, and previus experiences connecting
+
+ Sockets are API that uses library and system calls. I dont feel lost with that definition because it learned about those 2 types of calls when I was reading about the tools ltrace and strace. I got to read about them after Hacking practcing on Over The Wire. =D
+
+## Some python code
+
+ Nice to se some practice. I can monitor the trafic of those scripts using Wireshart later.
+ 
+ One socket fot the client and One socket for the server, but the server will create a new socket to handle each accepted connection.
+ The client socket also binds to a open port.
+
+## 

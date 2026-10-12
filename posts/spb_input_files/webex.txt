@@ -1,0 +1,16 @@
+Exploring the web
+
+I’m trying to find some interesting websites and topics on the internet.
+Today, I found some interesting things.
+
+On Neocities, I found two websites:
+
+https://kobegeens.neocities.org/
+
+https://webmentions.neocities.org/
+
+Kobegeens’s site has a very cool-looking theme. I really like this old-school computer aesthetic—a nice green terminal that I feel like copying into one of my projects.
+
+The second one isn’t very flashy, but it made me aware of webmentions. That’s not a very popular topic. I mean, what is popular in tech nowadays if not AI? Webmentions are a way to notify a website when its link is posted somewhere else. They’re meant to allow inter-website communication. Some articles compare this to social media features. It’s curious to think that there’s a serious movement toward social communication outside of social media. It feels like resistance to the giants.
+
+After some research, I found out that there’s something called linkbacks. There are four types of them.

@@ -1,0 +1,38 @@
+postFintech.html
+#top-card-title Building an Internal Ledger: My Journey from Concept to Deployment
+ #p Probably the most scary project I ever had to deal with!
+ #p Any fintech needs to keep financial books reliable long term. A ledger with double-entry accounting is the way to do it.
+
+#card-p It's 2026 and I am the tech team manager of a startup, having to tackle a big project. Just before starting the post for real, here is a list of some topics that make up my journey: 
+ #ul
+  #li Elicitation
+  #li Accounting principles
+  #li Compliance
+  #li Progressive business rule adoption
+  #li Teaching
+  #li Team coordination
+  #li Executive communication
+
+#card-title What is an internal ledger?
+ #p In a nutshell, it is an organization's internal system for keeping track of financial transactions.
+ #p Every business has one of those, usually for financial and accounting purposes.
+ #p In my case, my system must enable new interactions with clients. It needs to consistently maintain assets acquired by them as they perform transactions. It will open new business possibilities through an automatic and scalable system.
+ #p If that is too vague yet, I will elaborate further down this article.
+
+#card-title Why did I start it?
+ #p Well, I was told to.
+ #p I work at a startup that is planning to automate its processes. The most important one is client transactions. At the time of writing, when a client wants to buy something from us or check some info, they need to contact us via WhatsApp. We want our clients doing that via mobile app features, without anyone’s help.
+ #p But that was just the beginning. The idea soon evolved into keeping user balances that could be spent on our products and be drawn out. That is scary!
+ #p Dealing with someone else’s money is a very big responsibility, even more when it is through an automatic system. I needed to find a reliable way to do that.
+ #p After some research, I found out about the Double Entry Accounting method. It is the industry standard for fintech ledgers.
+ #p Great! I have the task, the theory, now I need to know how to implement it.
+
+#card-title Fear of delegation
+ #p I am probably not alone. Many IT professionals prefer to work alone, build their own projects step by step in a way that they know everything about it. I remember that in university I would rather work on a big assignment by myself rather than on a team.
+ #p That is something that I need to overcome.
+ #p Up to this point, I have been working on this project’s backend alone, but now I have two junior developers under my responsibility.
+ #p I have been trying to, very slowly, introduce them to the project, but I can’t expect them to ascend to another level before starting some serious tasks.
+ #p My plan right now is to optimize the AI workflow for them, let them work on more important tasks, and I will review them thoroughly.
+
+#card-title Dead Line
+ #p I told them 6 months, they want it in 3 months
